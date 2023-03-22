@@ -1,14 +1,7 @@
-//
-//  DetailEditView.swift
-//  Scrumdinger
-//
-//  Created by Antonio Rodriguez on 3/22/23.
-//
-
 import SwiftUI
 
 struct DetailEditView: View {
-    @State private var data = DailyScrum.Data()
+    @Binding var data: DailyScrum.Data
     @State private var newAttendeeName = ""
     
     var body: some View {
@@ -16,19 +9,21 @@ struct DetailEditView: View {
             Section(header: Text("Meeting Info")) {
                 TextField("Title", text: $data.title)
                 HStack {
-                    Slider(value: $data.lengthInMinutes, in: 5...60, step: 1) {
+                    Slider(value: $data.lengthInMinutes, in: 5...30, step: 1) {
                         Text("Length")
                     }
+                    .accessibilityValue("\(Int(data.lengthInMinutes)) minutes")
                     Spacer()
                     Text("\(Int(data.lengthInMinutes)) minutes")
                         .accessibilityHidden(true)
                 }
+                ThemePicker(selection: $data.theme)
             }
             Section(header: Text("Attendees")) {
                 ForEach(data.attendees) { attendee in
                     Text(attendee.name)
                 }
-                .onDelete{ indices in
+                .onDelete { indices in
                     data.attendees.remove(atOffsets: indices)
                 }
                 HStack {
@@ -52,6 +47,6 @@ struct DetailEditView: View {
 
 struct DetailEditView_Previews: PreviewProvider {
     static var previews: some View {
-        DetailEditView()
+        DetailEditView(data: .constant(DailyScrum.sampleData[0].data))
     }
 }
